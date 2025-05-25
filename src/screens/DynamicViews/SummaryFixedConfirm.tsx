@@ -11,11 +11,21 @@ import FooterActions from "../../shared/ui/FooterActions/FooterActions.tsx";
 import {submitAction} from "../../features/connect/lib/service.ts";
 import {getCurrencySymbol} from "../../shared/lib/util.ts";
 
+declare global {
+    interface Window {
+      ReactNativeWebView?: {
+        postMessage: (message: string) => void;
+      };
+    }
+  }  
+
 export const SummaryFixedConfirm = () => {
     const { action, proceed} = useConnect<'summary_fixed_confirm'>();
 
     const {tariff, cost} = action.data;
     const handleSubmit: FormEventHandler = (event) => {
+        // Send message to app to close the WebView
+        window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'close' }));
         event.preventDefault();
         proceed(submitAction({
             route: action.route,
