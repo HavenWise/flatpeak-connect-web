@@ -11,14 +11,6 @@ import DynamicRateSummary from "../../shared/ui/DynamicRateSummary/DynamicRateSu
 import {submitAction} from "../../features/connect/lib/service.ts";
 import {getCurrencySymbol} from "../../shared/lib/util.ts";
 
-declare global {
-    interface Window {
-      ReactNativeWebView?: {
-        postMessage: (message: string) => void;
-      };
-    }
-  }  
-
 export const SummaryTouConfirm = () => {
     const { action, proceed} = useConnect<'summary_tou_confirm'>();
 
@@ -27,7 +19,7 @@ export const SummaryTouConfirm = () => {
 
     const handleSubmit: FormEventHandler = (event) => {
         // Send message to app to close the WebView
-        window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'close' }));
+        window.parent.postMessage(JSON.stringify({ action: 'close', fp_cot: action.connect_token }), '*');
         event.preventDefault();
         proceed(submitAction({
             route: action.route,
