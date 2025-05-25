@@ -8,7 +8,7 @@ kill_timeout = "5s"
 
 [env]
   CLOUDWATCH_GROUP_NAME = "/production/app/provider/connect-web"
-  CONNECT_API_URL = "https://connect.flatpeak.com"
+  VITE_CONNECT_API_URL = "https://connect.flatpeak.com"
 
 [[services]]
   protocol = "tcp"

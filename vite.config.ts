@@ -8,7 +8,7 @@ export default defineConfig(({mode }) => {
     base: "/",
     plugins: [react()],
     define: {
-      CONNECT_API_URL: `"${env.CONNECT_API_URL}"`
+      VITE_CONNECT_API_URL: `"${env.VITE_CONNECT_API_URL}"`
     },
     preview: {
       port: 7070,
