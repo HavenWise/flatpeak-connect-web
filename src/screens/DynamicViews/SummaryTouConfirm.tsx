@@ -28,16 +28,20 @@ export const SummaryTouConfirm = () => {
 
     const handleSubmit: FormEventHandler = (event) => {
         event.preventDefault();
-
-        proceed(submitAction({
+        
+        const promise = submitAction({
             route: action.route,
             type: "submit",
             connect_token: action.connect_token,
             action: "SAVE"
-        }));
+        });
 
-        // Send message to app to close the WebView
-        window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'close', fp_cot: action.connect_token }));
+        promise.then((response) => {
+            // Send message to app to close the WebView
+            window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'close', fp_cot: action.connect_token }));
+
+            proceed(Promise.resolve(response));
+        });     
     }
 
     const handleEdit = () => {
