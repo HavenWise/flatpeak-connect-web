@@ -28,6 +28,8 @@ export const SummaryTouConfirm = () => {
 
     const handleSubmit: FormEventHandler = (event) => {
         event.preventDefault();
+
+        window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'handle submit started' }));
         
         const promise = submitAction({
             route: action.route,
@@ -36,14 +38,20 @@ export const SummaryTouConfirm = () => {
             action: "SAVE"
         });
 
-        promise.then((response) => {
+        window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'handle submit promise created' }));
+
+        promise.then(() => {
             // Send message to app to close the WebView
             window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'close', fp_cot: action.connect_token }));
-
-            proceed(Promise.resolve(response));
+            
+            // Don't call proceed - let the WebView close without navigation
+        }).catch((error) => {
+            // Only call proceed on error to show error state
+            console.error('Submit action failed:', error);
+            proceed(Promise.reject(error));
         });     
     }
-
+    
     const handleEdit = () => {
         proceed(submitAction({
             route: action.route,
