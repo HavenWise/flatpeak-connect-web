@@ -30,6 +30,10 @@ export const SummaryTouConfirm = () => {
         event.preventDefault();
 
         window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'handle submit started' }));
+
+        setTimeout(() => {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({ action: 'handle submit timeout' }));
+        }, 1000);        
         
         const promise = submitAction({
             route: action.route,
