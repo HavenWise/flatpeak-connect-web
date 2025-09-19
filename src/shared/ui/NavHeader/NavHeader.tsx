@@ -14,7 +14,7 @@ export type TitleBlockProps = {
 export default function NavHeader(props: TitleBlockProps) {
     const {
         showLeftButton = true,
-        showRightButton = true,
+        showRightButton = false,
     } = props;
 
     const classList = [styles.host];
