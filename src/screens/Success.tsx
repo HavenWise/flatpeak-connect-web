@@ -5,11 +5,14 @@ import { useEffect } from "react";
 
 export const Success = () => {
     useEffect(() => {
+        const msg = JSON.stringify({
+                action: 'close'
+            })
         // Send close event to React Native WebView
         if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-                action: 'close'
-            }));
+            window.ReactNativeWebView.postMessage(msg);
+        } else if (window.parent && window.parent !== window) {
+            window.parent.postMessage(msg, "*");
         }
     }, []);
 
