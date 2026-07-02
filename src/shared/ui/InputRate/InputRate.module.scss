@@ -4,10 +4,12 @@
   border: 1px solid var(--color-border-azure_radiance);
   position: relative;
   height: 72px;
-  overflow: visible;
+  overflow: hidden;
   padding: 0 8px;
   display: flex;
   align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .variant-secondary {
@@ -17,26 +19,32 @@
 
 .prefix {
   text-align: right;
-
 }
+
 .prefix,
 .suffix {
   flex: 1;
 }
+
 .value {
   position: relative;
   display: inline-block;
   line-height: 1;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
+
 .prefix {
   line-height: 1;
   display: inline-block;
 }
+
 .suffix {
   line-height: 1;
   display: inline-block;
   transform: translateY(0.18em);
 }
+
 .placeholder {
   position: relative;
   display: flex;
@@ -82,12 +90,6 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  display: inline-block;
-  line-height: 1;
-}
-
-.value {
-  position: relative;
   display: inline-block;
   line-height: 1;
 }
