@@ -144,21 +144,6 @@ function redirectPrependedDigit(
     );
 }
 
-function formatDisplayValue(value: string, showDecimals: boolean): string {
-    if (!showDecimals || !value.includes(".")) {
-        return value;
-    }
-
-    const dotIndex = value.indexOf(".");
-    const fractionalPart = value.slice(dotIndex + 1);
-
-    if (fractionalPart === "") {
-        return value.slice(0, dotIndex);
-    }
-
-    return value;
-}
-
 function mapCursorThroughNormalization(
     raw: string,
     previousValue: string,
@@ -233,6 +218,7 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
         maxIntegerLength = 6,
         maxDecimalLength = 4,
         onFocus,
+        onBlur,
         ...inputAttributes
     } = props;
 
@@ -243,9 +229,10 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
     };
 
     const [value, setValue] = useState(() => getInitialRateValue(defaultValue, useDefault));
+    const [isFocused, setIsFocused] = useState(false);
     const placeholder = getPlaceholder(useDefault, showDecimals);
-    const isPlaceholder = value === "" && Boolean(placeholder);
-    const displayValue = isPlaceholder ? placeholder : formatDisplayValue(value, showDecimals);
+    const isPlaceholder = value === "" && Boolean(placeholder) && !isFocused;
+    const displayValue = isPlaceholder ? placeholder : value;
 
     const inputRef = useRef<HTMLInputElement>(null);
     const selectionRef = useRef<{ start: number; end: number } | null>(null);
@@ -266,7 +253,13 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
     }, [value]);
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(true);
         onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(false);
+        onBlur?.(e);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -316,6 +309,7 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
                     value={value}
                     {...inputAttributes}
                     onFocus={handleFocus}
+                    onBlur={handleBlur}
                     onChange={handleChange}
                 />
                 <View className={styles.overlay}>
