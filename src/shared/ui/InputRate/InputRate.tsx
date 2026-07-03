@@ -136,6 +136,10 @@ function isDecimalSeparator(char: string): boolean {
     return /[.,，]/.test(char);
 }
 
+function getRejectedInvalidCursor(attemptedCursor: number, currentValue: string): number {
+    return Math.min(Math.max(0, attemptedCursor - 1), currentValue.length);
+}
+
 function getRejectedCursor(
     currentValue: string,
     violation: "integer" | "decimal",
@@ -409,7 +413,7 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
                 rejectInput(cursor, "integer");
                 return;
             }
-            scheduleSelection(cursor);
+            scheduleSelection(getRejectedInvalidCursor(cursor, value));
             return;
         }
 
