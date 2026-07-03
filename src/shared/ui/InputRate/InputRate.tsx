@@ -10,7 +10,7 @@ import {
     useState,
 } from "react";
 import Box from "../Box/Box.js";
-import { validateDecimalInput } from "../../lib/inputValidation.ts";
+import { getDecimalInputLimitMessage, getDecimalInputLimitViolation, validateDecimalInput } from "../../lib/inputValidation.ts";
 
 type InputRateTimeProps = {
     variant?: "primary" | "secondary",
@@ -46,13 +46,9 @@ function getPlaceholder(useDefault: boolean, showDecimals: boolean): string {
 
 function getInitialRateValue(
     defaultValue: InputHTMLAttributes<HTMLInputElement>["defaultValue"],
-    useDefault: boolean,
 ): string {
     if (defaultValue !== undefined && defaultValue !== null && defaultValue !== "" && defaultValue !== 0) {
         return String(defaultValue);
-    }
-    if (!useDefault) {
-        return "";
     }
     return "";
 }
@@ -92,13 +88,78 @@ function normalizeRateInputValue(
     return value;
 }
 
+function isDigit(char: string): boolean {
+    return /^\d$/.test(char);
+}
+
+function isIntegerLimitExceeded(
+    previousValue: string,
+    rawValue: string,
+    insertedChar: string,
+    maxIntegerLength: number,
+): boolean {
+    if (!isDigit(insertedChar)) {
+        return false;
+    }
+
+    const previousDotIndex = previousValue.indexOf(".");
+    const previousInteger = previousDotIndex === -1
+        ? previousValue
+        : previousValue.slice(0, previousDotIndex);
+
+    if (previousInteger.length < maxIntegerLength) {
+        return false;
+    }
+
+    const normalizedRaw = replaceDecimalSeparators(rawValue);
+    const rawDotIndex = normalizedRaw.indexOf(".");
+    const rawInteger = rawDotIndex === -1
+        ? normalizedRaw
+        : normalizedRaw.slice(0, rawDotIndex);
+
+    if (rawInteger.length > previousInteger.length) {
+        return true;
+    }
+
+    if (previousDotIndex === -1 && rawDotIndex !== -1 && !isDecimalSeparator(insertedChar)) {
+        return true;
+    }
+
+    if (previousDotIndex === -1 && rawDotIndex === -1 && normalizedRaw.length > previousValue.length) {
+        return true;
+    }
+
+    return false;
+}
+
 function isDecimalSeparator(char: string): boolean {
     return /[.,，]/.test(char);
+}
+
+function getRejectedCursor(
+    currentValue: string,
+    violation: "integer" | "decimal",
+    attemptedCursor: number,
+    maxDecimalLength: number,
+): number {
+    const dotIndex = currentValue.indexOf(".");
+
+    if (violation === "integer") {
+        return dotIndex === -1 ? currentValue.length : dotIndex;
+    }
+
+    if (dotIndex === -1) {
+        return currentValue.length;
+    }
+
+    const fractionalEnd = dotIndex + 1 + maxDecimalLength;
+    return Math.min(Math.max(attemptedCursor, dotIndex + 1), fractionalEnd);
 }
 
 function redirectPrependedDigit(
     raw: string,
     previousValue: string,
+    maxIntegerLength: number,
     maxDecimalLength: number,
 ): string {
     if (!previousValue.includes(".")) {
@@ -125,6 +186,10 @@ function redirectPrependedDigit(
     const prependedDigits = nextIntegerPart.slice(0, nextIntegerPart.length - integerPart.length);
     if (!/^\d+$/.test(prependedDigits)) {
         return raw;
+    }
+
+    if (integerPart.length >= maxIntegerLength) {
+        return previousValue;
     }
 
     const appendedFractionalDigits = nextFractionalPart.startsWith(fractionalPart)
@@ -228,8 +293,10 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
         maxDecimalLength,
     };
 
-    const [value, setValue] = useState(() => getInitialRateValue(defaultValue, useDefault));
+    const [value, setValue] = useState(() => getInitialRateValue(defaultValue));
     const [isFocused, setIsFocused] = useState(false);
+    const [limitError, setLimitError] = useState<string | null>(null);
+    const [selectionTick, setSelectionTick] = useState(0);
     const placeholder = getPlaceholder(useDefault, showDecimals);
     const isPlaceholder = value === "" && Boolean(placeholder) && !isFocused;
     const displayValue = isPlaceholder ? placeholder : value;
@@ -237,28 +304,77 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
     const inputRef = useRef<HTMLInputElement>(null);
     const selectionRef = useRef<{ start: number; end: number } | null>(null);
 
+    const scheduleSelection = (start: number, end: number = start) => {
+        selectionRef.current = { start, end };
+        setSelectionTick((tick) => tick + 1);
+    };
+
     useImperativeHandle(ref, () => ({
-        reset: () => setValue(getInitialRateValue(defaultValue, useDefault)),
-        input: inputRef.current,
+        reset: () => {
+            setValue(getInitialRateValue(defaultValue));
+            setLimitError(null);
+        },
     }));
 
+    const rejectInput = (
+        attemptedCursor: number,
+        violation: "integer" | "decimal" = "integer",
+    ) => {
+        const cursor = getRejectedCursor(value, violation, attemptedCursor, maxDecimalLength);
+        setLimitError(getDecimalInputLimitMessage(violation, maxIntegerLength, maxDecimalLength, showDecimals));
+        scheduleSelection(cursor);
+    };
+
     useLayoutEffect(() => {
-        if (!selectionRef.current || !inputRef.current) {
+        const input = inputRef.current;
+        if (!input) {
+            return;
+        }
+
+        if (input.value !== value) {
+            input.value = value;
+        }
+
+        if (!selectionRef.current) {
             return;
         }
 
         const { start, end } = selectionRef.current;
-        inputRef.current.setSelectionRange(start, end);
+        input.setSelectionRange(start, end);
         selectionRef.current = null;
-    }, [value]);
+    }, [value, selectionTick]);
+
+    const focusInputAtEnd = () => {
+        const input = inputRef.current;
+        if (!input) {
+            return;
+        }
+
+        input.focus();
+        const cursor = input.value.length;
+        input.setSelectionRange(cursor, cursor);
+    };
+
+    const handleHostActivate = (event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        if (event.target === inputRef.current) {
+            return;
+        }
+
+        focusInputAtEnd();
+    };
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
         setIsFocused(true);
+        const cursor = e.target.value.length;
+        requestAnimationFrame(() => {
+            e.target.setSelectionRange(cursor, cursor);
+        });
         onFocus?.(e);
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         setIsFocused(false);
+        setLimitError(null);
         onBlur?.(e);
     };
 
@@ -266,22 +382,41 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
         const input = e.target;
         const cursor = input.selectionStart ?? input.value.length;
         const insertedChar = input.value.charAt(Math.max(0, cursor - 1));
+
+        if (isIntegerLimitExceeded(value, input.value, insertedChar, maxIntegerLength)) {
+            rejectInput(cursor, "integer");
+            return;
+        }
+
         const rawValue = showDecimals
-            ? redirectPrependedDigit(input.value, value, maxDecimalLength)
+            ? redirectPrependedDigit(input.value, value, maxIntegerLength, maxDecimalLength)
             : input.value;
+
+        if (rawValue === value && input.value !== value) {
+            rejectInput(cursor, "integer");
+            return;
+        }
+
         const normalized = normalizeRateInputValue(rawValue, value, normalizeOptions);
 
         if (normalized === null) {
-            selectionRef.current = { start: cursor, end: cursor };
-            setValue(value);
+            const violation = getDecimalInputLimitViolation(rawValue, maxIntegerLength, maxDecimalLength);
+            if (violation === "decimal") {
+                rejectInput(cursor, "decimal");
+                return;
+            }
+            if (violation === "integer") {
+                rejectInput(cursor, "integer");
+                return;
+            }
+            scheduleSelection(cursor);
             return;
         }
 
         if (normalized === value && isDecimalSeparator(insertedChar)) {
             const dotIndex = value.indexOf(".");
             const afterDecimal = dotIndex === -1 ? value.length : dotIndex + 1;
-            selectionRef.current = { start: afterDecimal, end: afterDecimal };
-            setValue(value);
+            scheduleSelection(afterDecimal);
             return;
         }
 
@@ -293,11 +428,21 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
             input.selectionEnd ?? cursor,
             showDecimals,
         );
+        setLimitError(null);
         setValue(normalized);
     };
 
     return (
-        <View className={[styles.host, styles["variant-" + variant]].join(" ")}>
+        <Box className={styles.field}>
+            <View
+                className={[
+                    styles.host,
+                    styles["variant-" + variant],
+                    limitError ? styles.hostError : "",
+                ].join(" ")}
+                onClick={handleHostActivate}
+                onTouchEnd={handleHostActivate}
+            >
             <Box className={styles.placeholder}>
                 <input
                     ref={inputRef}
@@ -305,7 +450,7 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
                     type="text"
                     pattern="[0-9.,]*"
                     inputMode="decimal"
-                    step={0.01}
+                    autoComplete="off"
                     value={value}
                     {...inputAttributes}
                     onFocus={handleFocus}
@@ -351,7 +496,13 @@ const InputRate = forwardRef<InputRateHandle, InputRateTimeProps>((props, ref) =
                 </View>
             </Box>
             {Boolean(layoutRightOffset) && <Box pr={layoutRightOffset} />}
-        </View>
+            </View>
+            {limitError && (
+                <Typography className={styles.error} color="red" variant="button__forms12_book">
+                    {limitError}
+                </Typography>
+            )}
+        </Box>
     );
 });
 

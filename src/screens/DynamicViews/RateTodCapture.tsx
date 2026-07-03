@@ -154,7 +154,7 @@ export const RateTodCapture = () => {
         </LeadingText>
         <Box rg={16}>
           <BlockHeading text={`Day rate (${getCurrencySymbol(action.data.currency_code)}/kWh)`} icon={<DayIcon width={24} height={32} />} />
-          <Box cg={8} d={'row'}>
+          <Box cg={8} d={'row'} pb={28}>
             <InputTime
               key={`day_start_${timeInputsKey}`}
               name="day_startTime"
@@ -189,7 +189,7 @@ export const RateTodCapture = () => {
           <Separator />
 
           <BlockHeading text={`Night rate (${getCurrencySymbol(action.data.currency_code)}/kWh)`} icon={<NightIcon width={24} height={32} />} />
-          <Box cg={8} d={'row'}>
+          <Box cg={8} d={'row'} pb={28}>
             <InputTime
               key={`night_start_${timeInputsKey}`}
               name="night_startTime"
