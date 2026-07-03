@@ -42,6 +42,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .control {
@@ -54,10 +56,12 @@
   font-weight: 300;
   width: 100%;
   height: 100%;
-  padding: 16px 40px 16px;
+  padding: 34px 8px 18px;
+  box-sizing: border-box;
   outline: none;
   -webkit-appearance: none;
   flex: 1;
+  min-width: 0;
   color: transparent;
   caret-color: var(--color-border-black);
 
@@ -72,16 +76,18 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
+  padding: 12px;
+}
+
+.label {
+  line-height: 1;
 }
 
 .wrapper {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  bottom: 18px;
+  transform: translateX(-50%);
   display: inline-block;
   line-height: 1;
 }
