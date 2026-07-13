@@ -33,6 +33,20 @@ export const TariffSummary = () => {
             action: "DISCONNECT"
         }));
     }
+
+    // The tariff is already connected by the time the summary is shown, so there is nothing
+    // to "save" — Done simply completes/closes the session. Mirror NavHeader's close button:
+    // submit CLOSE, and the server returns the complete_tariff view (which posts the close
+    // message to the embedding app). Only offered when the server advertises CLOSE.
+    const canClose = action.actions?.includes("CLOSE") ?? false;
+    const handleDone = () => {
+        proceed(submitAction({
+            route: action.route,
+            type: "submit",
+            connect_token: action.connect_token,
+            action: "CLOSE"
+        }));
+    }
     
     const handleReportProblem = () => {
         setIsReportProblemDisabled(true);
@@ -54,7 +68,8 @@ export const TariffSummary = () => {
                 footer={(
                     <FooterActions variant={"secondary"} transparent={false}>
                         <ButtonBig label={"Disconnect"} type="button" variant={'link'} size={"small"} onClick={handleDisconnect}/>
-                        <ButtonBig label={"Edit"} type="button" size={"small"} onClick={handleEdit}/>
+                        <ButtonBig label={"Edit"} type="button" variant={'link'} size={"small"} onClick={handleEdit}/>
+                        {canClose && <ButtonBig label={"Done"} type="button" size={"small"} onClick={handleDone}/>}
                     </FooterActions>
                 )}>
             <Typography color="black" variant="basic_string" align="center">{tariff.name}</Typography>
