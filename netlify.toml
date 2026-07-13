@@ -1,13 +1,16 @@
 # Netlify configuration for the HavenWise staging deploy of FlatPeak Connect Web.
 # The app is a static Vite SPA; CONNECT_API_URL is baked in at build time via
-# vite.config.ts `define`. Staging points at FlatPeak's staging Connect API.
+# vite.config.ts `define`. "Staging" here means the new Anode client build; it talks to
+# FlatPeak's live Connect API (which now serves Anode), authenticated per-session by the
+# test/sandbox connect token (fp_cot) the app passes in the URL. There is no separate
+# public FlatPeak staging Connect host for us to point at.
 
 [build]
   command = "npm run build"
   publish = "dist"
 
 [build.environment]
-  CONNECT_API_URL = "https://stg-connect.flatpeak.com"
+  CONNECT_API_URL = "https://connect.flatpeak.com"
 
 # SPA fallback: serve index.html for client-side routes (e.g. deep links / refreshes)
 # so React Router handles them instead of returning a 404.
