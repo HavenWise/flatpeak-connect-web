@@ -23,18 +23,25 @@ export const CompleteView = () => {
 
     // When embedded in the HavenWise React Native app (WebView) or an iframe, tell the
     // host to close and hand back the connect token instead of navigating the web app to
-    // the callback URL. Returns true when an embedding host was signalled.
+    // the callback URL. Returns true when embedded (so the caller skips the web redirect).
+    //
+    // We emit on BOTH transports: newer app builds read the React Native WebView
+    // onMessage bridge, while app versions already in the wild listen for the window
+    // 'message' event — which is exactly what the legacy prod web app emitted via
+    // window.parent.postMessage. Sending both keeps non-updated apps working (the prod
+    // cutover then needs no app release); it is idempotent, as the close is.
     const closeEmbed = useCallback(() => {
+        const inWebView = !!window.ReactNativeWebView;
+        const inIframe = window.parent !== window;
+        if (!inWebView && !inIframe) {
+            return false;
+        }
         const message = JSON.stringify({action: 'close', fp_cot: action?.connect_token});
         if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(message);
-            return true;
         }
-        if (window.parent && window.parent !== window) {
-            window.parent.postMessage(message, "*");
-            return true;
-        }
-        return false;
+        window.parent.postMessage(message, "*");
+        return true;
     }, [action?.connect_token]);
 
     const redirect = useCallback(() => {
