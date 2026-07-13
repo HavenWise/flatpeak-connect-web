@@ -7,28 +7,61 @@ import Box from "../../shared/ui/Box/Box.tsx";
 import ButtonBig from "../../shared/ui/ButtonBig/ButtonBig.tsx";
 import FooterActions from "../../shared/ui/FooterActions/FooterActions.tsx";
 import WarningIcon from "../../shared/ui/icons/WarningIcon.tsx";
+import {useConnect} from "../../features/connect/lib/ConnectProvider.tsx";
+
+// Allow signalling completion to a React Native WebView host (see closeEmbed below).
+declare global {
+    interface Window {
+        ReactNativeWebView?: {
+            postMessage: (message: string) => void;
+        };
+    }
+}
 
 export const CompleteView = () => {
+    const {action} = useConnect<'complete_tariff'>();
+
+    // When embedded in the HavenWise React Native app (WebView) or an iframe, tell the
+    // host to close and hand back the connect token instead of navigating the web app to
+    // the callback URL. Returns true when an embedding host was signalled.
+    const closeEmbed = useCallback(() => {
+        const message = JSON.stringify({action: 'close', fp_cot: action?.connect_token});
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(message);
+            return true;
+        }
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage(message, "*");
+            return true;
+        }
+        return false;
+    }, [action?.connect_token]);
 
     const redirect = useCallback(() => {
-        location.href =  `/`;
-    }, []);
-
+        if (closeEmbed()) {
+            return;
+        }
+        location.href = `/`;
+    }, [closeEmbed]);
 
     const handleSubmit: FormEventHandler = (event) => {
         event.preventDefault();
         redirect();
     }
 
-
     useEffect(() => {
+        // Embedded hosts close immediately on completion; standalone web keeps the
+        // original 30s auto-redirect to the callback URL.
+        if (closeEmbed()) {
+            return;
+        }
         const timer = setTimeout(() => {
             redirect()
         }, 30000);
         return () => {
             clearTimeout(timer);
         }
-    }, [redirect]);
+    }, [closeEmbed, redirect]);
 
 
     return (
