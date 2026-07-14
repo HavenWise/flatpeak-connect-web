@@ -16,6 +16,7 @@ export const TariffSummary = () => {
     const [isReportProblemDisabled, setIsReportProblemDisabled] = useState(false);
 
     const {tariff, rates} = action.data;
+    const structureType = tariff.structure_type || 'FIXED';
 
     const handleEdit = () => {
         proceed(submitAction({
@@ -76,12 +77,12 @@ export const TariffSummary = () => {
             <MainHeading text="Tariff summary" />
             <TariffBadges
                 contract_type={action.direction}
-                structure_type={tariff.structure_type || 'FIXED'}
+                structure_type={structureType}
                 onReportProblem={handleReportProblem}
                 isReportProblemDisabled={isReportProblemDisabled}
             />
             <Box mt={16} rg={24} d={"column"} f={1}>
-                {tariff.structure_type === 'FIXED' ? 
+                {structureType === 'FIXED' ? 
                  <FixedRateSummary currencyCode={action.data.currency_code} cost={rates.today?.[0]?.tariff.cost || 0} tiered={!!tariff.tiered} /> 
                  : <DynamicRateSummary currencyCode={action.data.currency_code} rates={rates} tiered={!!tariff.tiered} />}
             </Box>

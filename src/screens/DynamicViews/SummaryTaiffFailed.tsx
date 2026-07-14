@@ -12,13 +12,13 @@ import CloudOffIcon from '../../shared/ui/icons/CloudOffIcon.tsx';
 export const SummaryTaiffFailed = () => {
     const { action, proceed } = useConnect<'tariff_connection_failed'>();
 
-    const handleEdit = () => {
+    const handleReconnect = () => {
         proceed(
             submitAction({
                 route: action.route,
                 type: 'submit',
                 connect_token: action.connect_token,
-                action: 'EDIT',
+                action: 'RECONNECT',
             })
         )
     }
@@ -47,7 +47,7 @@ export const SummaryTaiffFailed = () => {
                         size={'small'}
                         onClick={handleDisconnect}
                     />
-                    <ButtonBig label={'Start again'} type='button' size={'small'} onClick={handleEdit} />
+                    <ButtonBig label={'Start again'} type='button' size={'small'} onClick={handleReconnect} />
                 </FooterActions>
             }>
             <MainHeading text='Tariff connection failed' />

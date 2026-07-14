@@ -146,6 +146,11 @@ export default function Combobox(props: ComboboxProps) {
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const nextValue = event.target.value;
     setInputValue(nextValue);
+    const selectedOption = options.find(({ value }) => value === selectedValue);
+    if (!selectedOption || selectedOption.label !== nextValue) {
+      setSelectedValue(undefined);
+      onChange?.(undefined);
+    }
     // Open when it is typed
     setIsOpen(true);
   };
@@ -231,6 +236,16 @@ export default function Combobox(props: ComboboxProps) {
   const closeList = () => {
     setIsOpen(false);
     setHighlightedIndex(-1);
+
+    const exactMatch = options.find(
+      ({ label }) => label.toLowerCase() === inputValue.trim().toLowerCase()
+    );
+    if (exactMatch) {
+      setSelectedValue(exactMatch.value);
+      setInputValue(exactMatch.label);
+      onChange?.(exactMatch.value);
+      return;
+    }
 
     // reset to selected label
     const selectedOption = options.find(({ value }) => value === selectedValue);

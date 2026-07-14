@@ -63,6 +63,15 @@ export const CaptureTariffStructure = () => {
                         onClick={() => selectRateType('MARKET')}
                     />
                 )}
+                {options.includes('DYNAMIC') && (
+                    <TariffStructureButton
+                        key={"dynamic"}
+                        mainText="Variable"
+                        description="My tariff varies over time"
+                        icon={<ClockIcon/>}
+                        onClick={() => selectRateType('DYNAMIC')}
+                    />
+                )}
             </Box>
         </Layout>
     )

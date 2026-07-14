@@ -12,12 +12,12 @@ import HourglassIcon from '../../shared/ui/icons/HourglassIcon.tsx';
 export const SummaryTaiffInProgress = () => {
     const { action, proceed} = useConnect<'tariff_connection_pending'>();
 
-        const handleEdit = () => {
+        const handleDismissDirect = () => {
             proceed(submitAction({
                 route: action.route,
                 type: "submit",
                 connect_token: action.connect_token,
-                action: "EDIT"
+                action: "DISMISS_DIRECT"
             }));
         }
         const handleDisconnect = () => {
@@ -36,7 +36,7 @@ export const SummaryTaiffInProgress = () => {
                 <FooterActions variant={'secondary'}>
                     <ButtonBig label={'Cancel'} type="button" variant={'link'} size={'small'} onClick={handleDisconnect}
                     />
-                    <ButtonBig label={'Start again'} type="button" size={'small'} onClick={handleEdit} />
+                    <ButtonBig label={'Start again'} type="button" size={'small'} onClick={handleDismissDirect} />
                 </FooterActions>
             }
         >

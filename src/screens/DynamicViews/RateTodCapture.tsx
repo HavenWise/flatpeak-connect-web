@@ -95,24 +95,29 @@ export const RateTodCapture = () => {
         const form = event.target as unknown as Record<string, {value: string}>;
         const currencyCode = action.data.currency_code;
         
+        const initialHours = action.data.hours || [];
+        const { night: initialNight } = processHours(initialHours);
+        const hours = [
+            {
+                valid_from: `${form.day_startTime.value}:00`,
+                valid_to: `${form.day_endTime.value}:00`,
+                cost: convertCurrencyToMajorUnits(currencyCode, Number(form.day_cost.value))
+            },
+        ];
+
+        if (!initialHours.length || initialNight !== null) {
+            hours.push({
+                valid_from: `${form.night_startTime.value}:00`,
+                valid_to: `${form.night_endTime.value}:00`,
+                cost: convertCurrencyToMajorUnits(currencyCode, Number(form.night_cost.value))
+            });
+        }
+
         proceed(submitAction({
             route: action.route,
             type: "submit",
             connect_token: action.connect_token,
-            data: {
-                hours: [
-                    {
-                        valid_from: `${form.day_startTime.value}:00`,
-                        valid_to: `${form.day_endTime.value}:00`,
-                        cost: convertCurrencyToMajorUnits(currencyCode, Number(form.day_cost.value))
-                    },
-                    {
-                        valid_from: `${form.night_startTime.value}:00`,
-                        valid_to: `${form.night_endTime.value}:00`,
-                        cost: convertCurrencyToMajorUnits(currencyCode, Number(form.night_cost.value))
-                    }
-                ]
-            }
+            data: { hours }
         }));
     };
 

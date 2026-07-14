@@ -88,6 +88,11 @@ export const Connect = () => {
         return null;
     }
 
+    if (response.route === "session_complete") {
+        window.location.replace(response.data.callback_url);
+        return null;
+    }
+
     if (response.route === "session_redirect") {
         window.location.replace(response.data.redirect_url);
         return null;
