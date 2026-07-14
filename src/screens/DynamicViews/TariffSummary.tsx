@@ -57,8 +57,7 @@ export const TariffSummary = () => {
             connect_token: action.connect_token,
             action: "WRONG_TARIFF"
         }))
-        .then(() => {})
-        .catch(() => {
+        .finally(() => {
             setIsReportProblemDisabled(false);
         });
     }

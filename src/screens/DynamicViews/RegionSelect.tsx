@@ -37,7 +37,6 @@ export const RegionSelect = () => {
           </FooterActions>
         }
         onSubmit={handleSubmit}
-        noValidate
       >
         <MainHeading text="Select your region" />
         <LeadingText>
