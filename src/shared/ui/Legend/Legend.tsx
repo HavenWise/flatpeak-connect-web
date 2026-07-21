@@ -9,13 +9,13 @@ export default function Legend() {
             <View className={styles.timePeriod}>
                 <ColorDot peak="Low"/>
                 <Typography color="black" variant="button__forms12_book">
-                    Low Peak
+                    Off Peak
                 </Typography>
             </View>
             <View className={styles.timePeriod}>
                 <ColorDot peak="Medium"/>
                 <Typography color="black" variant="button__forms12_book">
-                    Middle Peak
+                    Mid Peak
                 </Typography>
             </View>
             <View className={styles.timePeriod}>

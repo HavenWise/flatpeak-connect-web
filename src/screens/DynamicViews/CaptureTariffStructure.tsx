@@ -29,7 +29,7 @@ export const CaptureTariffStructure = () => {
 
     return (
         <Layout component={"main"}>
-            <MainHeading text="Configure your tariff plan" />
+            <MainHeading text="Your tariff plan structure" />
             <LeadingText>
                 <Typography color="black_a40" variant="leading_string">
                     What affects your rate?
@@ -39,7 +39,7 @@ export const CaptureTariffStructure = () => {
                 {options.includes('FIXED') && (
                     <TariffStructureButton
                         key={'fixed'}
-                        description="My tariff is flat"
+                        description="My tariff is flat-rate"
                         mainText="Fixed Rate"
                         icon={<HandIcon/>}
                         onClick={() => selectRateType('FIXED')}
@@ -57,7 +57,7 @@ export const CaptureTariffStructure = () => {
                 {options.includes('MARKET') && (
                     <TariffStructureButton
                         key={"market"}
-                        mainText="Dynamic Market"
+                        mainText="Market"
                         description="My tariff follows market prices"
                         icon={<MarketIcon/>}
                         onClick={() => selectRateType('MARKET')}

@@ -32,7 +32,7 @@ export const TariffNameCapture = () => {
 
     return (
         <Layout component={"form"} footer={<FooterActions><ButtonBig label={"Next"} type="submit"/></FooterActions>} onSubmit={handleSubmit} noValidate>
-            <MainHeading text="Name your tariff plan" />
+            <MainHeading text="What’s your tariff name?" />
             <LeadingText>
                 <Typography color="black_a40" variant="leading_string">
                     What is the name of your tariff plan with your

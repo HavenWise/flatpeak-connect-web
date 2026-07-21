@@ -12,6 +12,7 @@ import FooterActions from "../../shared/ui/FooterActions/FooterActions.tsx";
 import {LeadingText} from "../../shared/ui/LeadingText/LeadingText.tsx";
 import {submitAction} from "../../features/connect/lib/service.ts";
 import {getCurrencySymbol} from "../../shared/lib/util.ts";
+import { convertCurrencyToMinorUnits, convertCurrencyToMajorUnits } from '../../shared/lib/currencyUtils.ts';
 
 export const RateFixedCapture = () => {
     const {action, proceed} = useConnect<"rate_fixed_capture">();
@@ -27,7 +28,7 @@ export const RateFixedCapture = () => {
             type: "submit",
             connect_token: action.connect_token,
             data: {
-                cost: Number(cost)
+                cost: Number(convertCurrencyToMajorUnits(action.data.currency_code, Number(cost.trim().replace(",", '.')))) || 0
             }
         }));
     }
@@ -49,13 +50,16 @@ export const RateFixedCapture = () => {
             If your tariff is a flat rate with no time, weekday or seasonal variations, please enter it below.
           </Typography>
         </LeadingText>
-        <BlockHeading text="Tariff, incl. VAT" icon={<HandIcon width={24} height={32} />} />
+        <BlockHeading
+          text={`Tariff, incl. VAT (${getCurrencySymbol(action.data.currency_code)}/kWh)`}
+          icon={<HandIcon width={24} height={32} />}
+        />
         <Box mt={16}>
           <InputRate
-              name="cost"
-              prefix={getCurrencySymbol(action.data.currency_code)}
-              defaultValue={action.data.cost}
-              autoFocus={true}
+            name="cost"
+            defaultValue={convertCurrencyToMinorUnits(action.data.currency_code, action.data.cost) || 0}
+            autoFocus={true}
+            suffix={false}
           />
         </Box>
       </Layout>

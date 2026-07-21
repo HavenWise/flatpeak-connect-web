@@ -5,12 +5,12 @@ import Rate from "../Rate/Rate.tsx";
 import { RateEntryDecorated} from "../../../../features/connect/lib/types.ts";
 
 type TimePeriodTableRowProps = {
-    currency: string;
+    currencyCode: string;
     rate: RateEntryDecorated;
 }
 
 export default function TimePeriodTableRow(props: TimePeriodTableRowProps) {
-    const {currency, rate: {valid_from,valid_to, peak, tariff: {cost}},} = props;
+    const {currencyCode, rate: {valid_from,valid_to, peak, tariff: {cost}},} = props;
   return (
     <View className={styles.host}>
       <TimePeriod
@@ -19,7 +19,7 @@ export default function TimePeriodTableRow(props: TimePeriodTableRowProps) {
           validTo={valid_to}
       />
         <View className={styles.rateCol}>
-            <Rate cost={cost} currency={currency} units={"/ kWh"} />
+            <Rate cost={cost} currencyCode={currencyCode} units={"/kWh"} />
         </View>
     </View>
   );

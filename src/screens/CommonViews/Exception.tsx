@@ -16,15 +16,18 @@ type ExceptionProps = {
 
 export const Exception = (props: ExceptionProps) => {
     const {message, token, requestId} = props
+
     return (
-        <Layout component={"main"} footer={<FooterActions><ButtonBig label={"Back"} variant={'critical-invert'} onClick={() => history.back()}/></FooterActions>}>
+        <Layout component={"main"} footer={<FooterActions>
+            <ButtonBig label={"Try again"} variant={'critical-invert'} onClick={() => history.back()}/>              
+            </FooterActions>}>
             <MainHeading text="Error" />
             <LeadingText>
                 <Typography color="white" variant="leading_string">
                     {token && (<>Token: {token}<br/><br/></>)}
                     {requestId && (<>Request: {requestId}<br/><br/></>)}
-                    {message || 'Something went wrong or your internet connection is down.'}<br/>
-                    Please try again later.
+                    {message || 'Something went wrong, or there was a problem with your connection.'}<br/><br/>
+                    Please try again later; if the problem persists, take a screenshot of this page and contact support.
                 </Typography>
             </LeadingText>
             <Box pt={88} ai={"center"}>

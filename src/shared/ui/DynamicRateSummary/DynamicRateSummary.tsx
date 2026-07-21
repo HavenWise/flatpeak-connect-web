@@ -4,39 +4,64 @@ import Box from "../Box/Box.tsx";
 import TabsSelector from "../TabsSelector/TabsSelector.tsx";
 import {PeakType, RateEntry, RateEntryDecorated, RatePeriodType} from "../../../features/connect/lib/types.ts";
 import TimePeriodTable from "../TariffPeriodTable/TimePeriodTable.tsx";
-import {useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {BarChart} from "../BarChart/BarChart.tsx";
 import Typography from "../Typography/Typography.tsx";
+import PriceNow from "../PriceNow/PriceNow.tsx";
 
 type DynamicRateSummaryProps = {
-  currency: string;
+  currencyCode: string;
   rates: Record<RatePeriodType, Array<RateEntry>>;
   tiered: boolean;
 }
 export default function DynamicRateSummary(props: DynamicRateSummaryProps) {
-  const { currency, rates, tiered} = props;
+  const { currencyCode, rates, tiered} = props;
 
     const [activeTab, setTab] = useState<RatePeriodType>("today");
     const [currentRates, setCurrentRates] = useState(decoratePeaks(rates.today));
+    const hasYesterdayRates = Boolean(rates?.yesterday?.length);
+    const getRatesForTab = useCallback((tab: RatePeriodType) => rates[tab] ?? [], [rates]);
+
+    const todayRatesForPriceNow = useMemo(() => {
+        return decoratePeaks(rates.today);
+    }, [rates.today]);
 
     const handleTabChanged = (tabId: "today"|"yesterday"|"tomorrow") => {
+        if (!hasYesterdayRates && tabId === "yesterday") {
+            return;
+        }
         setTab(tabId);
-        setCurrentRates(decoratePeaks(rates[tabId]));
+        setCurrentRates(decoratePeaks(getRatesForTab(tabId)));
     }
+
+    useEffect(() => {
+        if (!hasYesterdayRates && activeTab === "yesterday") {
+            setTab("today");
+            setCurrentRates(decoratePeaks(getRatesForTab("today")));
+        }
+    }, [activeTab, getRatesForTab, hasYesterdayRates]);
 
     return (
       <View className={styles.host}>
-          <BarChart rates={currentRates} currency={currency}/>
+        <PriceNow 
+            rates={todayRatesForPriceNow}
+            currencyCode={currencyCode}
+        />
+          <BarChart rates={currentRates} currencyCode={currencyCode} period={activeTab}/>
           <Box mt={24} rg={tiered ? 16 : 32}>
               <Box rg={8} ai={"center"} d={"column"}>
-                  <TabsSelector currentTab={activeTab} changeTab={(tab) => handleTabChanged(tab)}/>
+                  <TabsSelector
+                      currentTab={activeTab}
+                      changeTab={(tab) => handleTabChanged(tab)}
+                      showYesterdayTab={hasYesterdayRates}
+                  />
                   {tiered && (
                       <Typography color="black_a40" variant="button__forms16_book">
                           Tiered tariff, lowest tier displayed
                       </Typography>
                   )}
               </Box>
-            <TimePeriodTable rates={currentRates} currency={currency}/>
+            <TimePeriodTable rates={currentRates} currencyCode={currencyCode}/>
           </Box>
       </View>
   );

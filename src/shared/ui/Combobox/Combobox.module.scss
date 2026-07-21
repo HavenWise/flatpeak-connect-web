@@ -1,0 +1,114 @@
+.host {
+  background-color: var(--color-fill-background_light_gray);
+  border: none;
+  border-radius: 12px;
+  position: relative;
+  height: 64px;
+
+  &:focus-within {
+    border-color: var(--color-border-azure-radiance);
+    box-shadow: 0px 0px 0px 8px #d9eafd;
+    background-color: var(--color-fill-white);
+  }
+}
+
+.label {
+  position: absolute;
+  top: 24px;
+  left: 16px;
+  line-height: 1;
+  font-feature-settings: "salt" on;
+  color: var(--color-border-black_a40);
+  pointer-events: none;
+}
+
+.labelRaised {
+  top: 14px;
+  font-size: 12px;
+}
+
+.control {
+  font-family: var(--font-regolapro-book); // same as other text input
+  font-size: 16px;
+  font-weight: 300;
+  font-feature-settings: "case" on, "ss03" on, "salt" on;
+  color: #333333;
+  line-height: 1.4;
+  background: none;
+  border: none;
+  height: 64px;
+  padding: 21px 20px 0;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.inputWithLabel {
+  padding-top: 21px;
+
+  &::placeholder {
+    color: transparent;
+  }
+}
+
+.chevron {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: var(--color-fill-white);
+  border: 1px solid var(--color-border-black_a08);
+  border-radius: 12px;
+  box-shadow: -2px 3px 10px 0px var(--color-border-black_a05);
+  z-index: 2;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-regolapro-book);
+  font-size: 16px;
+  color: var(--color-typography-black);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    background-color: var(--color-fill-light_blue);
+    color: var(--color-typography-black);
+  }
+}
+
+.active {
+  color: var(--color-typography-white);
+  background-color: var(--color-fill-blue_2);
+}
+
+.selected {
+  font-weight: 600;
+}
+
+.empty {
+  color: var(--color-border-black_a40);
+  cursor: default;
+}

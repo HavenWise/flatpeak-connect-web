@@ -6,12 +6,12 @@ import View from "../View/View.tsx";
 import {RateEntryDecorated} from "../../../features/connect/lib/types.ts";
 
 type TimePeriodTableProps = {
-    currency: string;
+    currencyCode: string;
     rates: Array<RateEntryDecorated>;
 }
 
 export default function TimePeriodTable(props: TimePeriodTableProps) {
-  const {rates, currency} = props;
+  const {rates, currencyCode} = props;
   return (
       <View>
           <Box d={"row"} jc={"space-between"} className={styles.caption}>
@@ -23,7 +23,7 @@ export default function TimePeriodTable(props: TimePeriodTableProps) {
               </Typography>
           </Box>
         <View>
-            {rates.map((rate) => <TimePeriodTableRow key={rate.valid_from} rate={rate} currency={currency}/>)}
+            {rates.map((rate) => <TimePeriodTableRow key={rate.valid_from} rate={rate} currencyCode={currencyCode}/>)}
         </View>
       </View>
   );

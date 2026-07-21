@@ -1,0 +1,32 @@
+.host {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #FFAC45; /* Orange color */
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  margin-left: auto;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+  
+  &:active {
+    opacity: 0.6;
+  }
+  
+  &.disabled {
+    background-color: #FFAC45; /* Same orange color */
+    opacity: 0.4; /* Less bright but still orange */
+    
+    &:hover {
+      opacity: 0.4; /* No hover effect when disabled */
+    }
+    
+    &:active {
+      opacity: 0.4; /* No active effect when disabled */
+    }
+  }
+}

@@ -1,6 +1,5 @@
 .host {
   width: 100%;
-  min-height: 17.5%;
   row-gap: 8px;
   display: flex;
   flex-direction: column;
@@ -9,7 +8,7 @@
   z-index: 2;
   //bottom: var(--viewport-inset-bottom, 0);
   left: 0;
-  padding: 0 24px;
+  padding: 0 24px 36px;
   bottom: 0;
 
   background-color: var(--color-blurred-fade);

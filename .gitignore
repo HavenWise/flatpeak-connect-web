@@ -27,4 +27,3 @@ dist-ssr
 # localfiles
 .env.production
 .env
-fly-staging.toml

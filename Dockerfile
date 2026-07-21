@@ -1,6 +1,9 @@
 # Use Node.js as base image
 FROM node:latest AS build
 
+ARG CONNECT_API_URL
+ENV CONNECT_API_URL=${CONNECT_API_URL}
+
 # Set the working directory inside the container
 WORKDIR /app
 

@@ -5,20 +5,31 @@ import SelectorTabsBlockSlidingBackground from "../SlidingBackground/SlidingBack
 import TouchableOpacity from "../../TouchahbleOpacity/TouchableOpacity.tsx";
 import {RatePeriodType} from "../../../features/connect/lib/types.ts";
 
+const TAB_LABELS: Record<RatePeriodType, string> = {
+    yesterday: "Yesterday",
+    today: "Today",
+    tomorrow: "Tomorrow",
+};
+
 type TabsSelectorProps = {
     currentTab: RatePeriodType;
     changeTab: (tab: RatePeriodType) => void;
+    showYesterdayTab?: boolean;
 }
 export default function TabsSelector(props: TabsSelectorProps) {
-    const {currentTab, changeTab} = props;
-    const index = ["yesterday", "today", "tomorrow"].indexOf(currentTab)
+    const {currentTab, changeTab, showYesterdayTab = true} = props;
+    const tabs: RatePeriodType[] = showYesterdayTab ? ["yesterday", "today", "tomorrow"] : ["today", "tomorrow"];
+    const index = tabs.indexOf(currentTab);
+    const safeIndex = index === -1 ? 0 : index;
   return (
     <View className={styles.host}>
         <View className={styles.wrapper}>
-            <SelectorTabsBlockSlidingBackground index={index} total={3} />
-            <TouchableOpacity className={styles.caption} onClick={() => changeTab("yesterday")}><SelectorTab label="Yesterday" /></TouchableOpacity>
-            <TouchableOpacity className={styles.caption} onClick={() => changeTab("today")}><SelectorTab label="Today" /></TouchableOpacity>
-            <TouchableOpacity className={styles.caption} onClick={() => changeTab("tomorrow")}><SelectorTab label="Tomorrow" /></TouchableOpacity>
+            <SelectorTabsBlockSlidingBackground index={safeIndex} total={tabs.length} />
+            {tabs.map((tab) => (
+                <TouchableOpacity key={tab} className={styles.caption} onClick={() => changeTab(tab)}>
+                    <SelectorTab label={TAB_LABELS[tab]} />
+                </TouchableOpacity>
+            ))}
         </View>
     </View>
   );

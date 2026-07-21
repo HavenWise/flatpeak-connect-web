@@ -1,21 +1,21 @@
 import styles from "./FixedRateSummary.module.scss";
 import View from "../View/View.tsx";
 import Typography from "../Typography/Typography.tsx";
-import {roundRateValue} from "../../lib/util.ts";
+import {getCurrencySymbol, roundRateValue} from "../../lib/util.ts";
 
 type FixedRatesummaryProps = {
-  currency: string;
   tiered: boolean;
   cost?: number | string;
+  currencyCode: string;
 }
 export default function FixedRateSummary(props: FixedRatesummaryProps) {
-  const {cost = 0, currency, tiered} = props;
+  const {cost = 0, currencyCode, tiered} = props;
 
   return (
     <View className={styles.host}>
       <View className={styles.rateWrapper}>
         <Typography color="black" variant="rp_300_72">
-          {currency}{roundRateValue(cost) || '0.00'}
+          {roundRateValue(cost, 4, currencyCode) || '0.00'}{getCurrencySymbol(currencyCode)}
         </Typography>
         <Typography color="black" variant="button__forms32_book">
           /kWh

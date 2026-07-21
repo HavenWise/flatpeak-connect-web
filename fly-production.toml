@@ -1,35 +1,47 @@
-app = "connect-web-prod-fp"
-primary_region = "lhr"
-kill_signal = "SIGINT"
-kill_timeout = "5s"
+# fly.toml app configuration file generated for connect-web-anode-prod-fp on 2025-10-21T10:26:24+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'connect-web-anode-prod-fp'
+primary_region = 'lhr'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
 
 [experimental]
   auto_rollback = true
 
+[build]
+[build.args]
+    CONNECT_API_URL = "https://connect.flatpeak.com"
+
 [env]
-  CLOUDWATCH_GROUP_NAME = "/production/app/provider/connect-web"
-  VITE_CONNECT_API_URL = "https://connect.flatpeak.com"
+  CLOUDWATCH_GROUP_NAME = '/production/app/provider/connect-web-anode'
+  CONNECT_API_URL = 'https://connect.flatpeak.com'
 
 [[services]]
-  protocol = "tcp"
+  protocol = 'tcp'
   internal_port = 80
-  processes = ["app"]
+  processes = ['app']
 
   [[services.ports]]
     port = 80
-    handlers = ["http"]
+    handlers = ['http']
     force_https = true
 
   [[services.ports]]
     port = 443
-    handlers = ["tls", "http"]
+    handlers = ['tls', 'http']
+
   [services.concurrency]
-    type = "connections"
+    type = 'connections'
     hard_limit = 25
     soft_limit = 20
 
   [[services.tcp_checks]]
-    interval = "15s"
-    timeout = "2s"
-    grace_period = "1s"
-    restart_limit = 0
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '1s'
+
+[[vm]]
+  size = 'shared-cpu-1x'

@@ -51,7 +51,7 @@ export const ProviderNameCapture = () => {
             <LeadingText>
                 <Typography color="black_a40" variant="leading_string">
                     Sorry your provider is not listed yet. Please check if your postal
-                    address is correct and enter your provider name.
+                    address is correct and enter Enter provider name.
                 </Typography>
             </LeadingText>
 
@@ -64,9 +64,9 @@ export const ProviderNameCapture = () => {
 
 
             <Box mt={40} rg={16}>
-                <BlockHeading text="Your provider name" icon={<NoteIcon width={24} height={32}/>}/>
+                <BlockHeading text="Enter provider name" icon={<NoteIcon width={24} height={32}/>}/>
                 <InputText
-                    secondaryText="Your provider name"
+                    secondaryText="Enter provider name"
                     primaryText="Provider"
                     name={"provider_name"}
                     autoFocus={true}

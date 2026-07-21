@@ -1,19 +1,29 @@
 .host {
   min-height: calc(64px + var(--extra-top-offset, 0));
-  display: flex;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   padding: var(--extra-top-offset, 0) 24px 0;
   flex: 0 1 auto;
   position: relative;
   --extra-top-offset: 24px;
   background-color: var(--color-blurred-fade);
   backdrop-filter: saturate(180%) blur(10px);
-  //position: absolute;
-  //width: 100%;
 }
 
-.withNotch {
+.leftButton {
+  grid-column: 1;
+}
+
+.centerContent {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.rightButton {
+  grid-column: 3;
+  justify-self: end;
 }
 
 .customProvider {

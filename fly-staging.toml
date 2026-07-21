@@ -1,0 +1,46 @@
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'connect-web-anode-stg-fp'
+primary_region = 'lhr'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
+
+[experimental]
+  auto_rollback = true
+
+[build]
+[build.args]
+    CONNECT_API_URL = "https://stg-connect.flatpeak.com"
+
+[env]
+  CLOUDWATCH_GROUP_NAME = '/staging/app/provider/connect-web-anode'
+  CONNECT_API_URL = 'https://stg-connect.flatpeak.com'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 80
+  processes = ['app']
+
+  [[services.ports]]
+    port = 80
+    handlers = ['http']
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ['tls', 'http']
+
+  [services.concurrency]
+    type = 'connections'
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.tcp_checks]]
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '1s'
+
+[[vm]]
+  size = 'shared-cpu-1x'
