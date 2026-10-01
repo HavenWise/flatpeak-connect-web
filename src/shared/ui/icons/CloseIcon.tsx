@@ -1,5 +1,5 @@
 import {X} from "lucide-react";
-import {lucideIcon} from "./lucide.tsx";
+import {circledIcon} from "./lucide.tsx";
 
-const CloseIcon = lucideIcon(X, {width: 32, height: 32, color: "var(--color-icon-primary100)"});
+const CloseIcon = circledIcon(X);
 export default CloseIcon;

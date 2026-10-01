@@ -17,3 +17,25 @@ export const lucideIcon = (Icon: LucideIcon, defaults: IconDefaults) => {
     Wrapped.displayName = `${Icon.displayName ?? "Lucide"}Icon`;
     return Wrapped;
 };
+
+/*
+ * The header's round buttons (back, close): the glyph inset on a circular surface, as the Flatpeak
+ * icons drew it, so both controls in NavigationButton read as the same kind of thing. The failure
+ * theme sets --color-icon-surface so the white glyph stays legible on the error background.
+ */
+export const circledIcon = (Icon: LucideIcon) => {
+    const Wrapped = (props: IconProps & {showBackground?: boolean}) => {
+        const {
+            showBackground = true, width = 32, height = 32, color = "var(--color-icon-primary100)", style, ...rest
+        } = props;
+        const background = showBackground
+            ? {background: "var(--color-icon-surface, var(--surface-2))", borderRadius: "50%", padding: Math.round(width * 0.22)}
+            : {};
+        return (
+            <Icon width={width} height={height} color={color} strokeWidth={1.5}
+                  style={{...background, ...style}} {...(rest as LucideProps)} />
+        );
+    };
+    Wrapped.displayName = `Circled${Icon.displayName ?? "Lucide"}Icon`;
+    return Wrapped;
+};

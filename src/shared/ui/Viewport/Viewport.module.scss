@@ -38,6 +38,7 @@
   background-color: var(--error);
   --color-typography-black: var(--on-error);
   --color-icon-primary100: var(--on-error);
+  --color-icon-surface: color-mix(in srgb, var(--on-error) 20%, transparent);
   --color-blurred-fade: var(--error);
 }
 .wrapper {
