@@ -1,16 +1,5 @@
-import {HTMLAttributes} from "react";
-const EditIcon = (props: HTMLAttributes<SVGElement> & {width?: number, height?: number}) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={20}
-        height={20}
-        fill="none"
-        {...props}
-    >
-        <path
-            fill="#0096F7"
-            d="m18.865 2.941-1.338-1.347.713-.703c.323-.313.801-.352 1.104-.05l.224.235c.332.322.332.791 0 1.143l-.703.722ZM7.117 13.596c-.185.078-.38-.147-.303-.313l.88-1.836 9.11-9.111 1.339 1.318-9.122 9.112-1.904.83Zm-3.554 6.328c-2.032 0-3.067-1.006-3.067-3.027V5.646c0-2.012 1.035-3.028 3.067-3.028h11.064l-1.572 1.572H3.592c-.977 0-1.524.528-1.524 1.543v11.084c0 1.016.547 1.534 1.524 1.534h11.416c.683 0 1.22-.518 1.22-1.534V7.443l1.573-1.572v11.026c0 2.021-1.016 3.027-2.774 3.027H3.563Z"
-        />
-    </svg>
-)
-export default EditIcon
+import {Pencil} from "lucide-react";
+import {lucideIcon} from "./lucide.tsx";
+
+const EditIcon = lucideIcon(Pencil, {width: 20, height: 20, color: "var(--color-icon-primary100)"});
+export default EditIcon;

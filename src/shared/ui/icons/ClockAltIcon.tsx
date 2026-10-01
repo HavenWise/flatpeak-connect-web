@@ -1,23 +1,5 @@
-import {HTMLAttributes} from "react";
-const ClockAltIcon = (props: HTMLAttributes<SVGElement> & {width?: number, height?: number, color?: string}) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={41}
-        height={40}
-        fill="none"
-        {...props}
-    >
-        <g clipPath="url(#a)">
-            <path
-                fill="#ABABAB"
-                d="M37.156 20c0 4.31-1.755 8.443-4.878 11.49-3.124 3.048-7.36 4.76-11.778 4.76s-8.654-1.712-11.778-4.76C5.6 28.444 3.844 24.31 3.844 20c0-4.31 1.755-8.443 4.878-11.49 3.124-3.048 7.36-4.76 11.778-4.76s8.654 1.712 11.778 4.76c3.123 3.047 4.878 7.18 4.878 11.49ZM0 20c0 5.304 2.16 10.391 6.004 14.142C9.85 37.892 15.064 40 20.5 40c5.437 0 10.651-2.107 14.496-5.858C38.84 30.392 41 25.304 41 20S38.84 9.609 34.996 5.858C31.15 2.108 25.936 0 20.5 0 15.063 0 9.849 2.107 6.004 5.858 2.16 9.608 0 14.696 0 20ZM18.578 9.375V20c0 .625.32 1.21.857 1.563l7.688 5c.88.578 2.073.343 2.666-.524s.352-2.023-.537-2.602L22.422 19V9.375c0-1.04-.857-1.875-1.922-1.875s-1.922.836-1.922 1.875Z"
-            />
-        </g>
-        <defs>
-            <clipPath id="a">
-                <path fill="#fff" d="M0 0h41v40H0z"/>
-            </clipPath>
-        </defs>
-    </svg>
-)
-export default ClockAltIcon
+import {AlarmClock} from "lucide-react";
+import {lucideIcon} from "./lucide.tsx";
+
+const ClockAltIcon = lucideIcon(AlarmClock, {width: 41, height: 40, color: "var(--ink-3)"});
+export default ClockAltIcon;

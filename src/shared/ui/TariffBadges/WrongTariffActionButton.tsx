@@ -20,7 +20,7 @@ export default function WrongTariffActionButton(props: WrongTariffActionButtonPr
       onClick={disabled ? undefined : onClick}
     >
       {!disabled && (
-        <IncidentIcon width={12} height={12} />
+        <IncidentIcon width={12} height={12} color="var(--warning-text)" />
       )}
       <Typography color="dynamic" variant="button__forms12_sup_regular">
         {displayText}
