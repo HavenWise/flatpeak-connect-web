@@ -11,7 +11,7 @@ import {ContractTermCapture} from "./DynamicViews/ContractTermCapture.tsx";
 import {TariffSelect} from "./DynamicViews/TariffSelect.tsx";
 import NavHeader from "../shared/ui/NavHeader/NavHeader.tsx";
 import {useTheme} from "../features/theme/ThemeProvider.tsx";
-import {useEffect, useMemo} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {Exception} from "./CommonViews/Exception.tsx";
 import {RateTodCapture} from "./DynamicViews/RateTodCapture.tsx";
 import {MarketSurchargeCapture} from "./DynamicViews/MarketSurchargeCapture.tsx";
@@ -26,12 +26,21 @@ import DemoDisclaimer from "../shared/ui/DemoDisclaimer/DemoDisclaimer.tsx";
 import {SummaryTaiffFailed} from "./DynamicViews/SummaryTaiffFailed.tsx";
 import {RegionSelect} from "./DynamicViews/RegionSelect.tsx";
 import { TariffSummary } from "./DynamicViews/TariffSummary.tsx";
+import {
+    completeCallback,
+    OutcomeTracker,
+    postOutcome,
+    wantsOutcomeMessage,
+} from "../features/outcome/outcome.ts";
 
 export const Connect = () => {
     const {state} = useLocation();
     const {response} = state || {};
     const {setTheme} = useTheme();
     const {token, ready: tokenParsed, proceed} = useNextAction();
+    // Read once, from the URL the app opened: later navigations keep only fp_cot.
+    const [outcomeMode] = useState(() => wantsOutcomeMessage(window.location.search));
+    const tracker = useRef(new OutcomeTracker()).current;
     const {isFailed, error, requestId} = useMemo(() => {
         if (!response) {
             return { isFailed: false, error: '', requestId: undefined };
@@ -61,6 +70,22 @@ export const Connect = () => {
         setTheme(isFailed ? "failure" : 'light')
     }, [isFailed, setTheme])
 
+    // HAV-1039: one structured outcome per session, posted when the flow finishes. Errors are not
+    // a finish: the error view offers "Try again", and closing the page changes nothing.
+    useEffect(() => {
+        if (!outcomeMode || !response || isFailed) {
+            return;
+        }
+        tracker.observe(response);
+        if (response.route === "complete_tariff" && tracker.claimFinish()) {
+            postOutcome(tracker.outcome());
+        }
+        if (response.route === "session_redirect" && tracker.claimFinish()) {
+            completeCallback(response.data.redirect_url)
+                .then((reached) => postOutcome(reached ? tracker.outcome() : tracker.failure()));
+        }
+    }, [outcomeMode, response, isFailed, tracker])
+
     const routerProps = useMemo(() => {
         return {
             unknown: UnknownView,
@@ -89,7 +114,10 @@ export const Connect = () => {
     }
 
     if (response.route === "session_redirect") {
-        window.location.replace(response.data.redirect_url);
+        // In outcome mode the effect above reaches the callback in the background instead.
+        if (!outcomeMode) {
+            window.location.replace(response.data.redirect_url);
+        }
         return null;
     }
 

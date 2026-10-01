@@ -1,3 +1,21 @@
+# Havenwise deployment notes
+
+This fork serves `tariff.havenwise.co.uk` from Netlify (`netlify.toml`), and that is the page the Havenwise app opens today. **Anything merged to `main` goes live for every app build in the field.** The GitHub workflow also deploys `fly-staging.toml` on a push to `main`.
+
+## Outcome message for the app (HAV-1039)
+
+- The app mints a single-use connect token with `POST /tariff/token` on havenwise-api and opens `/?fp_cot=<token>`. That token is the page's only credential.
+- **Legacy (no extra parameter):** behaviour is unchanged. On `session_redirect` the page navigates to the havenwise-api callback, which links the tariff and posts the bare string `"close"`. On `complete_tariff` it posts `{"action":"close","fp_cot":...}`.
+- **`&outcome=message` (new app builds):**
+  - On `session_redirect` the page fetches the callback in the background instead of navigating to it.
+  - When the flow finishes, it posts exactly one JSON message: `{"status":"connected"|"failed","tariff":{"name","supplier","varies"}|null}`. It goes over `window.ReactNativeWebView.postMessage`, and also over `window.parent.postMessage` when the page is in an iframe.
+  - `connected` means Flatpeak finished with a tariff and the callback was reached. It does **not** prove Havenwise linked the tariff, because the callback always answers 200. The app confirms the link by re-reading `GET /buildings/{id}/suggestions`.
+  - `varies` is false only for a `FIXED` structure.
+  - Errors are not a finish: the error view offers "Try again". Closing the page posts nothing.
+  - On `complete_tariff` the legacy `{"action":"close"}` message is still sent as well, so the app should act only on messages carrying `status`.
+
+---
+
 # Flatpeak Connect web
 
 The Flatpeak Connect web app is the open source reference implementation of the Flatpeak Connect experience. It shows how to embed tariff connection inside your own product and helps developers understand the full flow from start to completion.
