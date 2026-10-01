@@ -31,8 +31,63 @@ export type TariffOutcome = {
     tariff: OutcomeTariff | null;
 };
 
-export const wantsOutcomeMessage = (search: string): boolean =>
-    new URLSearchParams(search).get(OUTCOME_PARAM) === OUTCOME_MESSAGE;
+// Remembered per token in sessionStorage: a direct supplier login leaves the page and comes back
+// to a URL Flatpeak builds, which carries fp_cot but not our parameter.
+const STORAGE_PREFIX = "havenwise.outcome.";
+
+const readStored = (token: string): boolean => {
+    try {
+        return window.sessionStorage.getItem(STORAGE_PREFIX + token) === OUTCOME_MESSAGE;
+    } catch {
+        return false;
+    }
+};
+
+const store = (token: string): void => {
+    try {
+        window.sessionStorage.setItem(STORAGE_PREFIX + token, OUTCOME_MESSAGE);
+    } catch {
+        // Storage can be unavailable; the URL parameter still works for a flow that never leaves.
+    }
+};
+
+export const wantsOutcomeMessage = (search: string): boolean => {
+    const params = new URLSearchParams(search);
+    const token = params.get("fp_cot") ?? "";
+    if (params.get(OUTCOME_PARAM) === OUTCOME_MESSAGE) {
+        if (token) {
+            store(token);
+        }
+        return true;
+    }
+    return token !== "" && readStored(token);
+};
+
+// Only a redirect to our own API callback ends the session. Flatpeak also redirects mid-flow, for
+// example to a supplier's own login, and that must navigate as it always has.
+const CALLBACK_PATH = "/tariff/flatpeak/callback";
+
+export const isHavenwiseCallback = (redirectUrl: string): boolean => {
+    try {
+        return new URL(redirectUrl).pathname.endsWith(CALLBACK_PATH);
+    } catch {
+        return false;
+    }
+};
+
+// The last action submitted to Connect, so a response can be read in the light of what asked for
+// it: a session that ends after DISCONNECT has no tariff, whatever the summary said before.
+let lastSubmittedAction: string | undefined;
+
+export const recordSubmittedAction = (action: string | undefined): void => {
+    lastSubmittedAction = action;
+};
+
+export const takeSubmittedAction = (): string | undefined => {
+    const action = lastSubmittedAction;
+    lastSubmittedAction = undefined;
+    return action;
+};
 
 // A fixed tariff is one price all day; every other structure moves with the time or the market.
 const FIXED: TariffStructureType = "FIXED";
@@ -40,13 +95,16 @@ const FIXED: TariffStructureType = "FIXED";
 /*
  * Follows the Connect responses for one session and answers what the outcome is. The summary
  * route is Flatpeak saying a tariff is connected on its side; a later failed route (a reconnect
- * that did not take) forgets it, and a later summary restores it.
+ * that did not take) or a DISCONNECT forgets it, and a later summary restores it.
  */
 export class OutcomeTracker {
     private tariff: OutcomeTariff | null = null;
     private finished = false;
 
-    observe(response: Partial<CommonRenderRoute> | undefined): void {
+    observe(response: Partial<CommonRenderRoute> | undefined, submittedAction?: string): void {
+        if (submittedAction === "DISCONNECT") {
+            this.tariff = null;
+        }
         if (response?.route === "tariff_summary") {
             const summary = (response as CommonRenderRoute<"tariff_summary">).data;
             this.tariff = {
