@@ -6,6 +6,7 @@
   border-radius: 4px;
   background-color: var(--warning-soft);
   --color-typography-dynamic: var(--warning-text);
+  color: var(--warning-text); /* the glyph paints currentColor, so it matches the label */
   cursor: pointer;
   transition: opacity 0.2s ease;
   margin-left: auto;
