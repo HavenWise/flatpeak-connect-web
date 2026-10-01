@@ -22,7 +22,7 @@ export default function WrongTariffActionButton(props: WrongTariffActionButtonPr
       {!disabled && (
         <IncidentIcon width={12} height={12} />
       )}
-      <Typography color="white" variant="button__forms12_sup_regular">
+      <Typography color="dynamic" variant="button__forms12_sup_regular">
         {displayText}
       </Typography>
     </View>

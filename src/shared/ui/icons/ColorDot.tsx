@@ -3,9 +3,9 @@ import {PeakType} from "../../../features/connect/lib/types.ts";
 
 
 const ColorMap:Record<PeakType, string> = {
-    Low: "#6FCF97",
-    Medium: "#7857FF",
-    High: "#FA4D56",
+    Low: "var(--success)",
+    Medium: "var(--heat)",
+    High: "var(--error)",
 }
 
 const ColorDotIcon = ({peak, ...props}: HTMLAttributes<SVGElement> & {width?: number, height?: number, peak: PeakType}) => (

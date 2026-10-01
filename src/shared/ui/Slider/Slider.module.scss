@@ -46,7 +46,7 @@
   &:before {
     content: "";
     display: block;
-    background-color: #D9D9D9;
+    background-color: var(--surface-2);
     padding: 4px;
     cursor: pointer;
     border-radius: 50%;
@@ -54,5 +54,5 @@
 }
 
 .dot.active:before {
-  background-color: #8E98A8;
+  background-color: var(--ink-3);
 }

@@ -1,8 +1,9 @@
 .host {
   background-color: var(--color-fill-blue_2);
-  border-radius: 12px;
-  padding-top: 26px;
-  padding-bottom: 26px;
+  border-radius: var(--r-pill);
+  min-height: 44px;
+  padding-top: 16px;
+  padding-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,7 +32,6 @@
   --color-typography-dynamic: var(--color-typography-red);
   background-color: var(--color-fill-white);
   .label {
-    font-weight: 300;
     font-size: 18px;
   }
 }
@@ -61,6 +61,12 @@
   }
 
 .size-small {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* Nested so it outranks the Typography variant's own weight. */
+.host .label {
+  font-family: var(--font-body);
+  font-weight: 700;
 }

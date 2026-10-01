@@ -143,17 +143,18 @@
 
 }
 .variant_heading_h1_string {
-  font-family: var(--font-regolapro-book);
-  font-size: 48px;
-  font-weight: 300;
-  line-height: 48px;
-  letter-spacing: -0.8px
+  font-family: var(--font-head);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
 }
 .variant_heading_h2_text {
-  font-family: var(--font-regolapro-book);
-  font-size: 21px;
-  font-weight: 300;
-  line-height: 24px;
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
 
 }
 .variant_i_regular_15 {

@@ -2,7 +2,7 @@
   padding: 16px;
   border-radius: 16px;
   width: 100%;
-  box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: var(--shadow-card);
 }
 
 .color-yellow {

@@ -4,7 +4,8 @@
   gap: 4px;
   padding: 4px 8px;
   border-radius: 4px;
-  background-color: #FFAC45; /* Orange color */
+  background-color: var(--warning-soft);
+  --color-typography-dynamic: var(--warning-text);
   cursor: pointer;
   transition: opacity 0.2s ease;
   margin-left: auto;
@@ -18,8 +19,8 @@
   }
   
   &.disabled {
-    background-color: #FFAC45; /* Same orange color */
-    opacity: 0.4; /* Less bright but still orange */
+    background-color: var(--warning-soft);
+    opacity: 0.4; /* Still reads as the same button, just quieter */
     
     &:hover {
       opacity: 0.4; /* No hover effect when disabled */
