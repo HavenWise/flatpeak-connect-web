@@ -28,8 +28,10 @@ import {RegionSelect} from "./DynamicViews/RegionSelect.tsx";
 import { TariffSummary } from "./DynamicViews/TariffSummary.tsx";
 import {
     completeCallback,
+    isHavenwiseCallback,
     OutcomeTracker,
     postOutcome,
+    takeSubmittedAction,
     wantsOutcomeMessage,
 } from "../features/outcome/outcome.ts";
 
@@ -76,11 +78,12 @@ export const Connect = () => {
         if (!outcomeMode || !response || isFailed) {
             return;
         }
-        tracker.observe(response);
+        tracker.observe(response, takeSubmittedAction());
         if (response.route === "complete_tariff" && tracker.claimFinish()) {
             postOutcome(tracker.outcome());
         }
-        if (response.route === "session_redirect" && tracker.claimFinish()) {
+        if (response.route === "session_redirect" && isHavenwiseCallback(response.data.redirect_url)
+            && tracker.claimFinish()) {
             completeCallback(response.data.redirect_url)
                 .then((reached) => postOutcome(reached ? tracker.outcome() : tracker.failure()));
         }
@@ -114,8 +117,9 @@ export const Connect = () => {
     }
 
     if (response.route === "session_redirect") {
-        // In outcome mode the effect above reaches the callback in the background instead.
-        if (!outcomeMode) {
+        // In outcome mode the effect above reaches our callback in the background instead. Any
+        // other redirect (a supplier's own login) navigates as it always has.
+        if (!outcomeMode || !isHavenwiseCallback(response.data.redirect_url)) {
             window.location.replace(response.data.redirect_url);
         }
         return null;

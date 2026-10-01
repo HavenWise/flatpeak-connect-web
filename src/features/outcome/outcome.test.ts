@@ -1,6 +1,14 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {CommonRenderRoute} from "../connect/lib/types.ts";
-import {completeCallback, OutcomeTracker, postOutcome, wantsOutcomeMessage} from "./outcome.ts";
+import {
+    completeCallback,
+    isHavenwiseCallback,
+    OutcomeTracker,
+    postOutcome,
+    recordSubmittedAction,
+    takeSubmittedAction,
+    wantsOutcomeMessage,
+} from "./outcome.ts";
 
 const summary = (structure_type?: "FIXED" | "TIME_OF_DAY" | "MARKET" | "DYNAMIC") => ({
     route: "tariff_summary",
@@ -22,6 +30,32 @@ describe("wantsOutcomeMessage", () => {
         expect(wantsOutcomeMessage("?fp_cot=cot_1&outcome=message")).toBe(true);
         expect(wantsOutcomeMessage("?fp_cot=cot_1")).toBe(false);
         expect(wantsOutcomeMessage("?fp_cot=cot_1&outcome=close")).toBe(false);
+    });
+});
+
+describe("wantsOutcomeMessage across a supplier login", () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("is remembered for the token, so the return trip without our parameter keeps it", () => {
+        const storage = new Map<string, string>();
+        vi.stubGlobal("window", {
+            sessionStorage: {
+                getItem: (k: string) => storage.get(k) ?? null,
+                setItem: (k: string, v: string) => storage.set(k, v),
+            },
+        });
+
+        expect(wantsOutcomeMessage("?fp_cot=cot_1&outcome=message")).toBe(true);
+        expect(wantsOutcomeMessage("?fp_cot=cot_1")).toBe(true);
+        expect(wantsOutcomeMessage("?fp_cot=cot_2")).toBe(false);
+    });
+});
+
+describe("isHavenwiseCallback", () => {
+    it("is true only for our API callback, so a mid-flow supplier login still navigates", () => {
+        expect(isHavenwiseCallback("https://api.havenwise.co.uk/tariff/flatpeak/callback?fp_cot=cot_1")).toBe(true);
+        expect(isHavenwiseCallback("https://login.octopus.energy/oauth/authorize?state=x")).toBe(false);
+        expect(isHavenwiseCallback("not a url")).toBe(false);
     });
 });
 
@@ -63,6 +97,26 @@ describe("OutcomeTracker", () => {
         expect(tracker.outcome().status).toBe("failed");
 
         tracker.observe(summary("DYNAMIC"));
+        expect(tracker.outcome().status).toBe("connected");
+    });
+
+    it("forgets the tariff when the customer disconnects it after the summary", () => {
+        const tracker = new OutcomeTracker();
+        tracker.observe(summary("FIXED"));
+        recordSubmittedAction("DISCONNECT");
+
+        tracker.observe(route("complete_tariff"), takeSubmittedAction());
+
+        expect(tracker.outcome()).toEqual({status: "failed", tariff: null});
+    });
+
+    it("keeps the tariff when the session ends with Done", () => {
+        const tracker = new OutcomeTracker();
+        tracker.observe(summary("FIXED"));
+        recordSubmittedAction("CLOSE");
+
+        tracker.observe(route("complete_tariff"), takeSubmittedAction());
+
         expect(tracker.outcome().status).toBe("connected");
     });
 
