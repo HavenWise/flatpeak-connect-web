@@ -41,9 +41,9 @@
   --bar-progress: 50%;
   --bar-offset: 0%;
   --bar-color-undefinded: var(--color-fill-background_light_gray);
-  --bar-color-low: #6FCF97;
-  --bar-color-medium: #7857FF;
-  --bar-color-high: #FA4D56;
+  --bar-color-low: var(--success);
+  --bar-color-medium: var(--heat);
+  --bar-color-high: var(--error);
 
   --bar-color: var(--bar-color-undefinded);
 
@@ -104,7 +104,7 @@
   span {
     display: inline-block;
     padding: 8px 0 0 5px;
-    border-left: 1px solid #000000;
+    border-left: 1px solid var(--border-strong);
     flex: 1;
     line-height: 24px;
     sup {

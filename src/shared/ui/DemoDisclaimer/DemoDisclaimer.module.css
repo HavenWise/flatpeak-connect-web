@@ -1,5 +1,5 @@
 .host {
-    background-color: #FFEEDA;
+    background-color: var(--warning-soft);
     padding: 8px 16px;
     display: flex;
     flex-direction: row;
@@ -7,5 +7,5 @@
     justify-content: flex-start;
     gap: 12px;
     position: sticky;
-    box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.03);
+    box-shadow: var(--shadow-card);
 }

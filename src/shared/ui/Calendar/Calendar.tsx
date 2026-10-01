@@ -187,7 +187,7 @@ export default function Calendar({ value, onChange, placeholder, name }: Calenda
                                 <Typography variant='button__forms16_book'>
                                     {MONTH_NAMES[currentMonth.getMonth()].substring(0, 3)} {currentMonth.getFullYear()}
                                 </Typography>
-                                <SmallArrowRightIcon direction='down' width={5} height={8} color='#000' />
+                                <SmallArrowRightIcon direction='down' width={5} height={8} color='var(--ink)' />
                             </button>
                             <button type='button' className={styles.navButton} onClick={() => navigateMonth('next')}>
                                 <SmallArrowRightIcon direction='right' width={6} height={10} />

@@ -1,0 +1,56 @@
+/*
+ * Havenwise design tokens (HAV-1039), light mode, copied from the redesign export
+ * (redesign/styles.css, generated from redesign/tokens.jsx). These are the only literal colours in
+ * the app: everything else, including the original Connect variables in index.css, reads a token.
+ * Change a value here only by re-deriving it from tokens.jsx.
+ */
+:root {
+  --font-head: 'Hanken Grotesk', -apple-system, system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', -apple-system, system-ui, sans-serif;
+
+  /* brand: raw coral is ~3.2:1 on white, so every filled control and every label uses -strong */
+  --primary: #FF5A35;
+  --primary-strong: #bd4125;
+  --primary-press: #ad3b21;
+  --primary-soft: #f2d9d1;
+  --on-primary: #FFFFFF;
+
+  /* state */
+  --success: #166534;
+  --success-soft: #d4dad1;
+  --success-text: #166534;
+  --warning: #96590A;
+  --warning-soft: #e4d9cb;
+  --warning-text: #8c5209;
+  --error: #8B1A1A;
+  --on-error: #FFFFFF;
+  --error-soft: #e3d1cd;
+  --error-text: #8B1A1A;
+  --heat: #EA980A;
+  --cool: #2665F6;
+
+  /* ink */
+  --ink: #2A2622;
+  --ink-2: #65615d;
+  --ink-3: #6e6b68;
+  --ink-sunken: #43403e;
+
+  /* surfaces and borders */
+  --bg: #F0ECE8;
+  --surface: #FFFFFF;
+  --surface-card: #F0ECE8;
+  --surface-2: #d9d5d1;
+  --surface-3: #cecac6;
+  --border: #ddd9d5;
+  --border-strong: #837f7b;
+  --toast: #2A2622;
+  --on-toast: #eeeeed;
+
+  /* elevation: only for things that lift (popovers, sheets), never a card */
+  --shadow-card: 0 1px 2px rgba(42,38,34,0.05), 0 6px 20px rgba(42,38,34,0.07);
+
+  /* shape */
+  --r: 22px;
+  --r-sm: calc(var(--r) * 0.55);
+  --r-pill: 999px;
+}

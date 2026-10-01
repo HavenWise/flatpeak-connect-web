@@ -7,7 +7,7 @@
 
   &:focus-within {
     border-color: var(--color-border-azure-radiance);
-    box-shadow: 0px 0px 0px 8px #d9eafd;
+    box-shadow: 0px 0px 0px 8px var(--primary-soft);
     background-color: var(--color-fill-white);
   }
 }
@@ -32,7 +32,7 @@
   font-size: 16px;
   font-weight: 300;
   font-feature-settings: "case" on, "ss03" on, "salt" on;
-  color: #333333;
+  color: var(--ink);
   line-height: 1.4;
   background: none;
   border: none;

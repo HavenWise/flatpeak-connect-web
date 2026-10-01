@@ -32,13 +32,13 @@
 }
 .theme-light {
   background-color: var(--color-fill-white);
-  --color-blurred-fade: rgba(255, 255, 255, 0.7);
+  --color-blurred-fade: color-mix(in srgb, var(--bg) 70%, transparent);
 }
 .theme-failure {
-  background-color: #FC7B83;
-  --color-typography-black: #ffffff;
-  --color-icon-primary100: #FA4D56;
-  --color-blurred-fade: #FC7B83;
+  background-color: var(--error);
+  --color-typography-black: var(--on-error);
+  --color-icon-primary100: var(--on-error);
+  --color-blurred-fade: var(--error);
 }
 .wrapper {
   height: var(--viewport-height, 100%);

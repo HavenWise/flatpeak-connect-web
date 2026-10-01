@@ -6,7 +6,7 @@
 .trigger {
   width: 100%;
   padding: 16px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid var(--border);
   border-radius: 8px;
   background-color: white;
   text-align: left;
@@ -17,13 +17,13 @@
   gap: 12px;
 
   &:hover {
-    border-color: #0096F7;
+    border-color: var(--primary-strong);
   }
 
   &:focus {
     outline: none;
-    border-color: #0096F7;
-    box-shadow: 0 0 0 2px rgba(0, 150, 247, 0.2);
+    border-color: var(--primary-strong);
+    box-shadow: 0 0 0 2px var(--primary-soft);
   }
 }
 
@@ -32,9 +32,9 @@
   top: -100%;
   left: 0;
   right: 0;
-  background: #F5F5F5;
+  background: var(--surface-card);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
   padding: 20px;
   margin-top: 8px;
   z-index: 1000;
@@ -61,7 +61,7 @@
   transition: background-color 0.2s ease;
 
   &:hover {
-    background: #f9f9f9;
+    background: var(--surface-card);
   }
 
   &:focus {
@@ -81,7 +81,7 @@
   transition: background-color 0.2s ease;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--border);
   }
 
   &:focus {
@@ -95,10 +95,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #F5F5F5;
-  border: 1px solid #E0E0E0;
+  background: var(--surface-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
   padding: 20px;
   z-index: 1001;
 }
@@ -109,7 +109,7 @@
   justify-content: space-between;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #CCCCCC;
+  border-bottom: 1px solid var(--border);
 }
 
 .backButton {
@@ -126,7 +126,7 @@
   transition: background-color 0.2s ease;
 
   &:hover {
-    background: #f9f9f9;
+    background: var(--surface-card);
   }
 
   &:focus {
@@ -136,7 +136,7 @@
 
 .pickerTitle {
   font-weight: 600;
-  color: #000;
+  color: var(--ink);
 }
 
 .monthsGrid,
@@ -154,20 +154,20 @@
 .monthButton,
 .yearButton {
   padding: 8px 4px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid var(--border);
   background: white;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: #F5F5F5;
+    background: var(--surface-card);
   }
 
   &.selected {
-    background: #0096F7;
+    background: var(--primary-strong);
     color: white;
-    border-color: #0096F7;
+    border-color: var(--primary-strong);
   }
 
   &.disabled {
@@ -189,7 +189,7 @@
 .weekday {
   text-align: center;
   padding: 8px 4px;
-  color: #999;
+  color: var(--ink-3);
   font-weight: 400;
   font-size: 12px;
 }
@@ -212,7 +212,7 @@
   justify-content: center;
   transition: all 0.2s ease;
   font-weight: 400;
-  color: #000;
+  color: var(--ink);
   margin: 0 auto;
 
   &.dayEmpty {
@@ -220,21 +220,21 @@
   }
 
   &.dayActive:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--border);
   }
 
   &.selected {
-    background: #0096F7;
+    background: var(--primary-strong);
     color: white;
     font-weight: 500;
 
     &:hover {
-      background: #0080D4;
+      background: var(--primary-press);
     }
   }
 
   &.disabled {
-    color: #CCCCCC;
+    color: var(--border);
     cursor: not-allowed;
     
     &:hover {

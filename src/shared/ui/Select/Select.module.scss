@@ -1,6 +1,6 @@
 .host {
-  background-color: #ffffff;
-  border: 1px solid #000000;
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   position: relative;
   height: 64px;
@@ -37,7 +37,7 @@
   border-radius: 8px;
   cursor: pointer;
   outline: none;
-  color: #333333;
+  color: var(--ink);
 
   &:focus {
     outline: none;
@@ -53,18 +53,18 @@
   }
   
   option {
-    color: #333333;
-    background-color: #ffffff;
+    color: var(--ink);
+    background-color: var(--surface);
     
     &:disabled,
     &:first-child {
-      color: #999999;
+      color: var(--ink-3);
       font-style: italic;
     }
   }
   
   &:invalid {
-    color: #999999;
+    color: var(--ink-3);
   }
 }
 
