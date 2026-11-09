@@ -7,6 +7,7 @@ import {useConnect} from "../../../features/connect/lib/ConnectProvider.tsx";
 import {useTheme} from "../../../features/theme/ThemeProvider.tsx";
 import {HasProviderSummaryTrait} from "../../../features/connect/lib/types.ts";
 import { submitAction } from '../../../features/connect/lib/service.ts';
+import { postToHost } from '../../lib/host.ts';
 
 export type TitleBlockProps = {
     showLeftButton?: boolean;
@@ -39,6 +40,11 @@ export default function NavHeader(props: TitleBlockProps) {
     }
 
     const handleClose = () => {
+        // Embedded, the person closing the page has given up: tell the app so directly. Submitting
+        // CLOSE would end in complete_tariff, which reads to the app as a connected tariff.
+        if (postToHost({ action: 'close', outcome: 'cancelled', fp_cot: action?.connect_token })) {
+            return;
+        }
         const hasCloseAction = action?.actions?.includes("CLOSE") ?? false;
         
         if (hasCloseAction) {
