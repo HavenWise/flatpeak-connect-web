@@ -40,6 +40,20 @@ const HOST_VERSION = readHostVersion();
 
 export const isEmbedded = (): boolean => !!window.ReactNativeWebView || window.parent !== window;
 
+// Screens where a tariff is already chosen or connecting. There the close is the person finishing,
+// not giving up: tariff_summary's own "Done" submits CLOSE, which ends in complete_tariff and a
+// connected close, and the app then checks the stored tariff. "cancelled" is only for a close
+// before any tariff can have been connected.
+const TARIFF_CHOSEN_ROUTES: ReadonlySet<string> = new Set([
+    'tariff_summary',
+    'tariff_connection_pending',
+    'complete_tariff',
+]);
+
+/** A close on this route means the person gave up, so it is reported as cancelled. */
+export const closeReportsCancelled = (route: string | undefined): boolean =>
+    !TARIFF_CHOSEN_ROUTES.has(route ?? '');
+
 /** The embedding app understands `outcome: 'cancelled'` and `not_listed`. */
 export const hostReadsOutcomes = (): boolean => isEmbedded() && HOST_VERSION === OUTCOMES_VERSION;
 
