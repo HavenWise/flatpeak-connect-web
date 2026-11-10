@@ -56,8 +56,8 @@ export const postToHost = (message: HostMessage): boolean => {
     }
     const serialised = JSON.stringify(message);
     window.ReactNativeWebView?.postMessage(serialised);
-    if (window.parent !== window) {
-        window.parent.postMessage(serialised, '*');
-    }
+    // Always, as closeEmbed did, WebView included: there `window.parent` is the page itself, and
+    // that window 'message' event is the transport older builds listen on.
+    window.parent.postMessage(serialised, '*');
     return true;
 };
