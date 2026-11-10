@@ -9,6 +9,7 @@ import TouchableOpacity from "../../shared/TouchahbleOpacity/TouchableOpacity.ts
 import FooterActions from "../../shared/ui/FooterActions/FooterActions.tsx";
 import {useEffect, useState} from "react";
 import {submitAction} from "../../features/connect/lib/service.ts";
+import {postToHost} from "../../shared/lib/host.ts";
 import {ProviderSummary} from "../../features/connect/lib/types.ts";
 import AddressCheckBlock from "../../shared/ui/AddressCheckBlock/AddressCheckBlock.tsx";
 import {formatPostalAddress} from "../../shared/lib/util.ts";
@@ -37,6 +38,10 @@ export const ProviderSelect = () => {
     }
 
     const onMissingProvider = () => {
+        // Embedded, the app offers its own tariff list instead of Flatpeak's dead end.
+        if (postToHost({action: "not_listed", stage: "provider", fp_cot: action.connect_token})) {
+            return;
+        }
         proceed(submitAction({
             route: action.route,
             type: "submit",

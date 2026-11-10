@@ -10,6 +10,7 @@ import Box from "../../shared/ui/Box/Box.tsx";
 import Search from "../../shared/ui/Search/Search.tsx";
 import TouchableOpacity from "../../shared/TouchahbleOpacity/TouchableOpacity.tsx";
 import {submitAction} from "../../features/connect/lib/service.ts";
+import {postToHost} from "../../shared/lib/host.ts";
 
 export const TariffSelect = () => {
     const {action,proceed} = useConnect<'tariff_select'>();
@@ -39,6 +40,10 @@ export const TariffSelect = () => {
     }
 
     const onMissingTariff = () => {
+        // Embedded, the app offers its own tariff list instead of Flatpeak's dead end.
+        if (postToHost({action: "not_listed", stage: "tariff", fp_cot: action.connect_token})) {
+            return;
+        }
         proceed(submitAction({
             route: action.route,
             type: "submit",

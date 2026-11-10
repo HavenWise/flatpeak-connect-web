@@ -8,41 +8,19 @@ import ButtonBig from "../../shared/ui/ButtonBig/ButtonBig.tsx";
 import FooterActions from "../../shared/ui/FooterActions/FooterActions.tsx";
 import WarningIcon from "../../shared/ui/icons/WarningIcon.tsx";
 import {useConnect} from "../../features/connect/lib/ConnectProvider.tsx";
-
-// Allow signalling completion to a React Native WebView host (see closeEmbed below).
-declare global {
-    interface Window {
-        ReactNativeWebView?: {
-            postMessage: (message: string) => void;
-        };
-    }
-}
+import {postToHost} from "../../shared/lib/host.ts";
 
 export const CompleteView = () => {
     const {action} = useConnect<'complete_tariff'>();
 
-    // When embedded in the HavenWise React Native app (WebView) or an iframe, tell the
-    // host to close and hand back the connect token instead of navigating the web app to
-    // the callback URL. Returns true when embedded (so the caller skips the web redirect).
-    //
-    // We emit on BOTH transports: newer app builds read the React Native WebView
-    // onMessage bridge, while app versions already in the wild listen for the window
-    // 'message' event — which is exactly what the legacy prod web app emitted via
-    // window.parent.postMessage. Sending both keeps non-updated apps working (the prod
-    // cutover then needs no app release); it is idempotent, as the close is.
-    const closeEmbed = useCallback(() => {
-        const inWebView = !!window.ReactNativeWebView;
-        const inIframe = window.parent !== window;
-        if (!inWebView && !inIframe) {
-            return false;
-        }
-        const message = JSON.stringify({action: 'close', fp_cot: action?.connect_token});
-        if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(message);
-        }
-        window.parent.postMessage(message, "*");
-        return true;
-    }, [action?.connect_token]);
+    // When embedded in the Havenwise app (WebView) or an iframe, tell the host the tariff is
+    // connected and hand back the connect token instead of navigating to the callback URL.
+    // Returns true when embedded (so the caller skips the web redirect). Idempotent, as the
+    // close is. Older app builds ignore `outcome` and read any close as a success.
+    const closeEmbed = useCallback(
+        () => postToHost({action: 'close', outcome: 'connected', fp_cot: action?.connect_token}),
+        [action?.connect_token],
+    );
 
     const redirect = useCallback(() => {
         if (closeEmbed()) {

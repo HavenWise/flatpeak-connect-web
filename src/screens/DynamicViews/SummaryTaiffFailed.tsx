@@ -8,6 +8,7 @@ import { submitAction } from '../../features/connect/lib/service.ts';
 import Typography from '../../shared/ui/Typography/Typography.tsx';
 import InfoMessage from '../../shared/ui/InfoMessage/InfoMessage.tsx';
 import CloudOffIcon from '../../shared/ui/icons/CloudOffIcon.tsx';
+import { postToHost } from '../../shared/lib/host.ts';
 
 export const SummaryTaiffFailed = () => {
     const { action, proceed } = useConnect<'tariff_connection_failed'>();
@@ -24,6 +25,10 @@ export const SummaryTaiffFailed = () => {
     }
 
     const handleDisconnect = () => {
+        // Embedded, Cancel returns to the app, which offers Try again and its own tariff list.
+        if (postToHost({ action: 'close', outcome: 'cancelled', fp_cot: action.connect_token })) {
+            return;
+        }
         proceed(
             submitAction({
                 route: action.route,

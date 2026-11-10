@@ -7,6 +7,7 @@ import {useConnect} from "../../../features/connect/lib/ConnectProvider.tsx";
 import {useTheme} from "../../../features/theme/ThemeProvider.tsx";
 import {HasProviderSummaryTrait} from "../../../features/connect/lib/types.ts";
 import { submitAction } from '../../../features/connect/lib/service.ts';
+import { closeReportsCancelled, postToHost } from '../../lib/host.ts';
 
 export type TitleBlockProps = {
     showLeftButton?: boolean;
@@ -39,6 +40,16 @@ export default function NavHeader(props: TitleBlockProps) {
     }
 
     const handleClose = () => {
+        // Embedded in an app that reads outcomes, a close before any tariff is chosen is the person
+        // giving up: tell the app directly, because submitting CLOSE ends in complete_tariff, which
+        // reads as connected. Once a tariff is chosen the close finishes the flow, so it keeps
+        // Flatpeak's own path (closeReportsCancelled).
+        if (
+            closeReportsCancelled(action?.route) &&
+            postToHost({ action: 'close', outcome: 'cancelled', fp_cot: action?.connect_token })
+        ) {
+            return;
+        }
         const hasCloseAction = action?.actions?.includes("CLOSE") ?? false;
         
         if (hasCloseAction) {
