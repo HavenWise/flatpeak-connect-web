@@ -15,13 +15,43 @@ export type HostMessage =
     | { action: 'close'; outcome: 'cancelled'; fp_cot?: string }
     | { action: 'not_listed'; stage: 'provider' | 'tariff'; fp_cot?: string };
 
+// App builds that read `outcome` and `not_listed` open this page with `?hw_host=2` (HAV-1383).
+// Older builds only act on a close, as a success: for them "cancelled" and "not listed" would be
+// dead buttons, so without the flag the page keeps Flatpeak's own behaviour for those. Read once
+// at load and kept for the session, because the page rewrites its URL to `/?fp_cot=` as it goes.
+const HOST_VERSION_PARAM = 'hw_host';
+const OUTCOMES_VERSION = '2';
+const STORAGE_KEY = 'hw_host';
+
+const readHostVersion = (): string | null => {
+    const fromUrl = new URLSearchParams(window.location.search).get(HOST_VERSION_PARAM);
+    try {
+        if (fromUrl) {
+            window.sessionStorage.setItem(STORAGE_KEY, fromUrl);
+            return fromUrl;
+        }
+        return window.sessionStorage.getItem(STORAGE_KEY);
+    } catch {
+        return fromUrl;
+    }
+};
+
+const HOST_VERSION = readHostVersion();
+
 export const isEmbedded = (): boolean => !!window.ReactNativeWebView || window.parent !== window;
 
+/** The embedding app understands `outcome: 'cancelled'` and `not_listed`. */
+export const hostReadsOutcomes = (): boolean => isEmbedded() && HOST_VERSION === OUTCOMES_VERSION;
+
 // Posts on BOTH transports: newer app builds read the React Native WebView onMessage bridge, while
-// builds already in the wild listen for the window 'message' event. Returns true when embedded, so
-// the caller skips its standalone behaviour.
+// builds already in the wild listen for the window 'message' event. Returns true when the message
+// was sent, so the caller skips its own behaviour. A connected close goes to every embedding host,
+// as it always has; "cancelled" and "not listed" only to a host that reads them.
 export const postToHost = (message: HostMessage): boolean => {
-    if (!isEmbedded()) {
+    const understood = message.action === 'close' && message.outcome === 'connected'
+        ? isEmbedded()
+        : hostReadsOutcomes();
+    if (!understood) {
         return false;
     }
     const serialised = JSON.stringify(message);
